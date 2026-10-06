@@ -45,8 +45,15 @@ export class Recurrence {
                     occurrence,
                 });
             }
-        } catch {
+        } catch (error) {
             // Could not read recurrence rule. User possibly not done typing.
+            // The message from rrule alone can be cryptic (for example, 'Unexpected end'),
+            // so include the text that was being analysed.
+            let message = `Error: Recurrence.fromText() failed to parse recurrence rule text '${recurrenceRuleText}'.`;
+            if (error instanceof Error) {
+                message += ` ${error.message}`;
+            }
+            console.log(message);
             return null;
         }
 

@@ -154,6 +154,25 @@ describe('Recurrence - with invalid dates in tasks', () => {
         expect(recurrence).toBeNull(); // Cannot calculated next date
     });
 
+    it('logs the recurrence rule text when it fails to create a recurrence', () => {
+        // Arrange
+        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+        // Act
+        const recurrence = Recurrence.fromText({
+            recurrenceRuleText: 'every day',
+            occurrence: new Occurrence({
+                dueDate: moment('2022-02-30').startOf('day'), // 30th February: invalid date
+            }),
+        });
+
+        // Assert
+        expect(recurrence).toBeNull();
+        expect(consoleSpy).toHaveBeenCalledTimes(1);
+        expect(consoleSpy.mock.calls[0][0]).toContain("'every day'");
+        consoleSpy.mockRestore();
+    });
+
     it('creates a recurrence if a lower priority date is invalid', () => {
         // Arrange
         const recurrence = Recurrence.fromText({
